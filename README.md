@@ -1,58 +1,149 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# AI Support Chat / Technical Support Assistant
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="https://img.shields.io/badge/Laravel-13.x-FF2D20?style=for-the-badge&logo=laravel" alt="Laravel 13" />
+  <img src="https://img.shields.io/badge/PHP-8.3-777BB4?style=for-the-badge&logo=php" alt="PHP 8.3" />
+
+  <img src="https://img.shields.io/badge/AI-OpenAI%20%2F%20OpenRouter-8A2BE2?style=for-the-badge" alt="AI integration" />
 </p>
 
-## About Laravel
+Проект представляет собой демонстрационное веб-приложение для технической поддержки, в котором пользователь может задать вопрос в чате, а искусственный интеллект помогает ответить на него. Если модель не может дать корректный ответ, вопрос автоматически переводится в чат сотрудника поддержки, где специалист продолжает диалог вручную.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+> Все данные в проекте являются выдуманными и используются только в демонстрационных целях.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Что делает проект
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Пользователь задаёт вопрос через чат поддержки
+- ИИ отвечает на запрос в реальном времени на основе данных из БД
+- Если ответ не найден или модель не уверена, чат передаётся сотруднику поддержки
+- Сотрудник видит список открытых обращений и может отвечать внутри панели оператора
+- Обновления сообщений происходят в реальном времени через Laravel Reverb
+- Поддерживается работа с историей сообщений и статусом прочтения
 
-## Learning Laravel
+## Как это работает
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```mermaid
+flowchart LR
+    U[Пользователь] --> C[Чат поддержки]
+    C --> AI[ИИ-ассистент]
+    AI -->|Есть ответ| U
+    AI -->|Нет ответа / не уверен| S[Сотрудник поддержки]
+    S --> U
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## Основные возможности
 
-## Contributing
+- Чат пользователя с поддержкой
+- Панель оператора/сотрудника
+- Поддержка статусов чата: открытый, обработанный, назначенный
+- Автоматическое определение темы вопроса
+- Интеграция с AI-сервисами для ответов
+- Реальное время через WebSockets и событийную модель Laravel
+- Простая и понятная структура на Laravel
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Технологический стек
 
-## Code of Conduct
+| Категория | Технология |
+| --- | --- |
+| Backend | PHP 8.3, Laravel 13 |
+| Real-time | Laravel Reverb, Laravel Echo, WebSockets |
+| Frontend | Blade, JavaScript, Vite |
+| AI | OpenAI API, OpenRouter, Ollama |
+| Styling | Bootstrap, custom CSS |
+| Database | MySQL / SQLite-compatible Laravel DB |
+| Package management | Composer, npm |
+| Testing | PHPUnit |
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Важная особенность
 
-## Security Vulnerabilities
+В проекте используется Laravel Reverb для организации обмена событиями и обновлений чата в реальном времени. Это позволяет мгновенно показывать новые сообщения, статусы печати и уведомления сотрудникам поддержки без перезагрузки страницы.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Структура проекта
 
-## License
+```text
+app/
+  Http/Controllers/      - контроллеры для чата и панели поддержки
+  Events/                - события для realtime-обновлений
+  Models/                - модели чатов, сообщений и пользователей
+  Services/              - интеграции с AI и логика обработки запросов
+config/                 - настройки Laravel, Reverb и приложений
+resources/views/        - Blade-шаблоны интерфейса
+routes/                 - маршруты приложения
+public/                 - статические файлы и точка входа
+database/               - миграции и seed-данные
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Установка и запуск
+
+### 1. Клонирование
+
+```bash
+git clone https://github.com/web-intelligent/chatbot.git
+cd ai-support-chat
+```
+
+### 2. Установка зависимостей
+
+```bash
+composer install
+npm install
+```
+
+### 3. Настройка окружения
+
+Создайте файл `.env` на основе `.env.example` и настройте ключи приложения:
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+Далее укажите параметры для:
+
+- базы данных
+- открытого AI API (`OpenAI` / `OpenRouter` / `Ollama`)
+- Laravel Reverb
+
+### 4. Миграции
+
+```bash
+php artisan migrate
+```
+
+### 5. Запуск проекта
+
+```bash
+php artisan serve
+php artisan reverb:start
+npm run dev
+```
+
+Или используйте подготовленный командный сценарий:
+
+```bash
+composer run dev
+```
+
+## Пример пользовательского сценария
+
+1. Пользователь открывает чат поддержки.
+2. Он пишет вопрос: "Когда пройдёт следующий семинар по судейству?"
+3. AI анализирует запрос и пытается дать ответ. Ответ будет основан на основе данных из календаря мероприятий.
+4. Если модель не знает точного ответа, система отправляет вопрос сотруднику поддержки.
+5. Оператор видит обращение в панели управления и продолжает диалог.
+
+## Используемые принципы
+
+- Интерактивный пользовательский опыт
+- Комбинация AI и человеческой поддержки
+- Быстрая коммуникация в режиме реального времени
+- Готовая основа для расширения функциональности
+
+## Лицензия
+
+Проект распространяется под лицензией MIT.
+
+## Автор
+
+Проект демонстрирует мои навыки в разработке на Laravel, архитектуре веб-приложений, интеграции AI, работе с WebSockets и построении пользовательских интерфейсов. Проект довольно сырой и многое ещё нужно доработать.
+
