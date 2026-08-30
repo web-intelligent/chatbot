@@ -1,0 +1,86 @@
+# --- Добавьте это ПЕРЕД строкой DirectoryIndex ---
+RewriteEngine On
+RewriteRule ^build/(.*)$ public/build/$1 [L]
+
+DirectoryIndex public/index.php
+
+# Включение сжатия
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript text/javascript application/json application/xml text/xml image/svg+xml
+</IfModule>
+
+# Отключение индексации каталогов
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    <FilesMatch "^(composer\.(json|lock)|\.env|\.editorconfig)$">
+        Require all denied
+    </FilesMatch>
+
+    RewriteEngine On
+
+    # Отключение прямого доступа к системным каталогам
+    RewriteRule ^(storage|app|bootstrap|config|database|resources|routes|tests)/ - [F,L,NC]
+
+    # Отключение доступа к скрытым файлам (.env, .git и т.д.)
+    RewriteRule ^.*\.env$ - [F,L,NC]
+    RewriteRule ^.*\.(git|svn|ht|DS_Store) - [F,L,NC]
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Send Requests To Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ public/index.php [L]
+</IfModule>
+
+# Увеличение безопасности через заголовки
+<IfModule mod_headers.c>
+    # Защита от кликов по iframe
+    Header always append X-Frame-Options SAMEORIGIN
+
+    # Защита от XSS
+    Header set X-XSS-Protection "1; mode=block"
+
+    # Защита от MIME-sniffing
+    Header set X-Content-Type-Options nosniff
+
+    # Включение политики Content Security Policy (CSP)
+    # добавлено 'unsafe-inline' в style-src 'self' 'unsafe-inline' чтобы можно было использовать теги <style></style> в коде
+#    Header set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; frame-ancestors 'self'; base-uri 'self';"
+
+    # Запрет использования Referer для других доменов
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # Разрешить HSTS
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+</IfModule>
+
+# Ограничение доступа к файлам, относящимся к Laravel
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Защита от загрузки исполняемых файлов
+<FilesMatch "\.(pl|py|jsp|asp|sh|cgi)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Запрет доступа к журналам и кэшу
+<FilesMatch "(^storage|^bootstrap/cache)">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
